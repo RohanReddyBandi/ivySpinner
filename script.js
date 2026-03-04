@@ -107,7 +107,7 @@ function buildWheel() {
     const label = document.createElement("div");
     label.className = "segment-label";
     const angle = idx * segmentSize + segmentSize / 2 - 90;
-    label.style.transform = `rotate(${angle}deg) translate(16px, -50%)`;
+    label.style.transform = `rotate(${angle}deg) translate(94px, -50%)`;
     const chip = document.createElement("div");
     chip.className = "segment-chip";
     chip.style.transform = `rotate(${-angle}deg)`;
