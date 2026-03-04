@@ -32,7 +32,7 @@ const schools = [
     full: "Harvard University",
     color: "#a51c30",
     monogram: "H",
-    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/2/29/Harvard_shield_wreath.svg/120px-Harvard_shield_wreath.svg.png",
+    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/2/29/Harvard_shield_wreath.svg/342px-Harvard_shield_wreath.svg.png",
   },
   {
     short: "Penn",
