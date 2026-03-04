@@ -1,12 +1,12 @@
 const schools = [
-  "Brown",
-  "Columbia",
-  "Cornell",
-  "Dartmouth",
-  "Harvard",
-  "Penn",
-  "Princeton",
-  "Yale",
+  { short: "Brown", full: "Brown University", domain: "brown.edu", color: "#f57f20" },
+  { short: "Columbia", full: "Columbia University", domain: "columbia.edu", color: "#9fb0c9" },
+  { short: "Cornell", full: "Cornell University", domain: "cornell.edu", color: "#b31b1b" },
+  { short: "Dartmouth", full: "Dartmouth College", domain: "dartmouth.edu", color: "#00693e" },
+  { short: "Harvard", full: "Harvard University", domain: "harvard.edu", color: "#a51c30" },
+  { short: "Penn", full: "University of Pennsylvania", domain: "upenn.edu", color: "#011f5b" },
+  { short: "Princeton", full: "Princeton University", domain: "princeton.edu", color: "#ee7f2d" },
+  { short: "Yale", full: "Yale University", domain: "yale.edu", color: "#00356b" },
 ];
 
 const decisions = [
@@ -15,22 +15,13 @@ const decisions = [
   { label: "Rejected", className: "decision-rejected", weight: 0.5 },
 ];
 
-const palette = [
-  "#0f4f7f",
-  "#1f7a63",
-  "#b5532f",
-  "#7a1c2d",
-  "#c29b40",
-  "#204e80",
-  "#8f4f1b",
-  "#2f6f8b",
-];
-
 const wheel = document.getElementById("wheel");
 const spinBtn = document.getElementById("spinBtn");
 const revealBtn = document.getElementById("revealBtn");
 const resetBtn = document.getElementById("resetBtn");
+const ivyLogoStrip = document.getElementById("ivyLogoStrip");
 const schoolResult = document.getElementById("schoolResult");
+const schoolLogo = document.getElementById("schoolLogo");
 const decisionResult = document.getElementById("decisionResult");
 
 let spinning = false;
@@ -38,25 +29,57 @@ let pendingSchool = null;
 let revealed = false;
 let currentRotation = 0;
 
+function logoUrl(domain, size = 128) {
+  return `https://logo.clearbit.com/${domain}?size=${size}`;
+}
+
 function buildWheel() {
   const segmentSize = 360 / schools.length;
   const gradientStops = schools
-    .map((_, idx) => {
+    .map((school, idx) => {
       const start = idx * segmentSize;
       const end = (idx + 1) * segmentSize;
-      return `${palette[idx % palette.length]} ${start}deg ${end}deg`;
+      return `${school.color} ${start}deg ${end}deg`;
     })
     .join(", ");
 
   wheel.style.background = `conic-gradient(${gradientStops})`;
 
   schools.forEach((school, idx) => {
-    const label = document.createElement("span");
+    const label = document.createElement("div");
     label.className = "segment-label";
     const angle = idx * segmentSize + segmentSize / 2 - 90;
     label.style.transform = `rotate(${angle}deg) translate(16px, -50%)`;
-    label.textContent = school;
+    const chip = document.createElement("div");
+    chip.className = "segment-chip";
+    chip.style.transform = `rotate(${-angle}deg)`;
+
+    const logo = document.createElement("img");
+    logo.src = logoUrl(school.domain, 64);
+    logo.alt = `${school.full} logo`;
+    logo.loading = "lazy";
+
+    const text = document.createElement("span");
+    text.textContent = school.short;
+
+    chip.appendChild(logo);
+    chip.appendChild(text);
+    label.appendChild(chip);
     wheel.appendChild(label);
+  });
+}
+
+function buildLogoStrip() {
+  schools.forEach((school) => {
+    const item = document.createElement("div");
+    item.className = "ivy-logo-item";
+
+    const logo = document.createElement("img");
+    logo.src = logoUrl(school.domain, 96);
+    logo.alt = `${school.full} logo`;
+    logo.loading = "lazy";
+    item.appendChild(logo);
+    ivyLogoStrip.appendChild(item);
   });
 }
 
@@ -75,6 +98,13 @@ function weightedDecision() {
 function resetDecisionUI() {
   decisionResult.textContent = "Hidden";
   decisionResult.className = "";
+}
+
+function resetSchoolUI() {
+  schoolResult.textContent = "Waiting for spin...";
+  schoolLogo.classList.add("school-logo-hidden");
+  schoolLogo.src = "";
+  schoolLogo.alt = "";
 }
 
 function spinWheel() {
@@ -103,7 +133,10 @@ function spinWheel() {
 wheel.addEventListener("transitionend", () => {
   if (!spinning) return;
   spinning = false;
-  schoolResult.textContent = pendingSchool;
+  schoolResult.textContent = pendingSchool.full;
+  schoolLogo.src = logoUrl(pendingSchool.domain, 128);
+  schoolLogo.alt = `${pendingSchool.full} logo`;
+  schoolLogo.classList.remove("school-logo-hidden");
   revealBtn.disabled = false;
 });
 
@@ -127,9 +160,10 @@ resetBtn.addEventListener("click", () => {
   // Force reflow so transition can be restored for future spins.
   void wheel.offsetWidth;
   wheel.style.transition = "transform 4.8s cubic-bezier(0.15, 0.7, 0.05, 1)";
-  schoolResult.textContent = "Waiting for spin...";
+  resetSchoolUI();
   resetDecisionUI();
   revealBtn.disabled = true;
 });
 
+buildLogoStrip();
 buildWheel();

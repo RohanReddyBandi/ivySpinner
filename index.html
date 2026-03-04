@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Spectral:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@500;700&family=Spectral:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
@@ -18,6 +18,7 @@
         <p class="eyebrow">Class of 2030</p>
         <h1>Ivy League Decision Spinner</h1>
         <p class="subhead">Spin to see which portal you open first. Then reveal your decision.</p>
+        <div id="ivyLogoStrip" class="ivy-logo-strip" aria-label="Ivy League logos"></div>
       </header>
 
       <section class="spinner-layout" aria-label="Ivy spinner">
@@ -36,7 +37,10 @@
 
       <section class="result-card" id="resultCard" aria-live="polite">
         <p class="result-label">Selected School</p>
-        <h2 id="schoolResult">Waiting for spin...</h2>
+        <div class="selected-school">
+          <img id="schoolLogo" class="school-logo school-logo-hidden" alt="" />
+          <h2 id="schoolResult">Waiting for spin...</h2>
+        </div>
         <p class="result-label">Decision</p>
         <h3 id="decisionResult">Hidden</h3>
       </section>

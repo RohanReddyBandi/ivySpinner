@@ -42,6 +42,7 @@ body {
 
 .eyebrow {
   margin: 0;
+  font-family: "Cinzel", serif;
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -59,6 +60,29 @@ h1 {
 .subhead {
   margin: 0 0 22px;
   font-size: clamp(1rem, 2.2vw, 1.2rem);
+}
+
+.ivy-logo-strip {
+  margin: 16px 0 6px;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ivy-logo-item {
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(16, 42, 67, 0.18);
+  border-radius: 10px;
+  min-height: 68px;
+  display: grid;
+  place-items: center;
+  padding: 6px;
+}
+
+.ivy-logo-item img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
 }
 
 .spinner-layout {
@@ -125,12 +149,32 @@ h1 {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 44%;
+  width: 46%;
   transform-origin: 0 0;
-  font-weight: 700;
-  font-size: clamp(0.75rem, 1.45vw, 1rem);
+}
+
+.segment-chip {
+  width: 82%;
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  align-items: center;
+  gap: 7px;
   color: #fff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  font-weight: 700;
+  font-size: clamp(0.67rem, 1.2vw, 0.9rem);
+}
+
+.segment-chip img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}
+
+.segment-chip span {
+  font-family: "Cinzel", serif;
+  line-height: 1;
 }
 
 .controls {
@@ -183,6 +227,22 @@ h1 {
   border: 1px solid rgba(16, 42, 67, 0.16);
 }
 
+.selected-school {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.school-logo {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+}
+
+.school-logo-hidden {
+  display: none;
+}
+
 .result-label {
   margin: 0;
   text-transform: uppercase;
@@ -210,6 +270,10 @@ h3 {
 }
 
 @media (max-width: 900px) {
+  .ivy-logo-strip {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
   .spinner-layout {
     grid-template-columns: 1fr;
   }
