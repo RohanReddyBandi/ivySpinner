@@ -76,13 +76,24 @@ h1 {
   min-height: 68px;
   display: grid;
   place-items: center;
-  padding: 6px;
+  padding: 6px 6px 8px;
+  align-content: center;
+  gap: 4px;
 }
 
 .ivy-logo-item img {
   width: 44px;
   height: 44px;
   object-fit: contain;
+}
+
+.ivy-logo-name {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1;
+  font-weight: 600;
+  text-align: center;
+  font-family: "Cinzel", serif;
 }
 
 .spinner-layout {
@@ -177,6 +188,30 @@ h1 {
   line-height: 1;
 }
 
+.logo-hidden {
+  display: none;
+}
+
+.logo-fallback {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: rgba(16, 42, 67, 0.36);
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.ivy-logo-item .logo-fallback {
+  width: 40px;
+  height: 40px;
+  font-size: 0.8rem;
+}
+
 .controls {
   display: grid;
   gap: 12px;
@@ -237,6 +272,9 @@ h1 {
   width: 46px;
   height: 46px;
   object-fit: contain;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.65);
+  padding: 4px;
 }
 
 .school-logo-hidden {

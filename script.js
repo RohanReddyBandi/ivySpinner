@@ -1,12 +1,60 @@
 const schools = [
-  { short: "Brown", full: "Brown University", domain: "brown.edu", color: "#f57f20" },
-  { short: "Columbia", full: "Columbia University", domain: "columbia.edu", color: "#9fb0c9" },
-  { short: "Cornell", full: "Cornell University", domain: "cornell.edu", color: "#b31b1b" },
-  { short: "Dartmouth", full: "Dartmouth College", domain: "dartmouth.edu", color: "#00693e" },
-  { short: "Harvard", full: "Harvard University", domain: "harvard.edu", color: "#a51c30" },
-  { short: "Penn", full: "University of Pennsylvania", domain: "upenn.edu", color: "#011f5b" },
-  { short: "Princeton", full: "Princeton University", domain: "princeton.edu", color: "#ee7f2d" },
-  { short: "Yale", full: "Yale University", domain: "yale.edu", color: "#00356b" },
+  {
+    short: "Brown",
+    full: "Brown University",
+    color: "#f57f20",
+    monogram: "B",
+    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/3/38/Brown_University_shield.svg/120px-Brown_University_shield.svg.png",
+  },
+  {
+    short: "Columbia",
+    full: "Columbia University",
+    color: "#9fb0c9",
+    monogram: "C",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Columbia_University_shield.svg/120px-Columbia_University_shield.svg.png",
+  },
+  {
+    short: "Cornell",
+    full: "Cornell University",
+    color: "#b31b1b",
+    monogram: "CU",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Cornell_University_seal.svg/120px-Cornell_University_seal.svg.png",
+  },
+  {
+    short: "Dartmouth",
+    full: "Dartmouth College",
+    color: "#00693e",
+    monogram: "D",
+    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/1/1c/Dartmouth_College_shield.svg/120px-Dartmouth_College_shield.svg.png",
+  },
+  {
+    short: "Harvard",
+    full: "Harvard University",
+    color: "#a51c30",
+    monogram: "H",
+    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/2/29/Harvard_shield_wreath.svg/120px-Harvard_shield_wreath.svg.png",
+  },
+  {
+    short: "Penn",
+    full: "University of Pennsylvania",
+    color: "#011f5b",
+    monogram: "P",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/UPenn_shield_with_banner.svg/120px-UPenn_shield_with_banner.svg.png",
+  },
+  {
+    short: "Princeton",
+    full: "Princeton University",
+    color: "#ee7f2d",
+    monogram: "PU",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Princeton_seal.svg/120px-Princeton_seal.svg.png",
+  },
+  {
+    short: "Yale",
+    full: "Yale University",
+    color: "#00356b",
+    monogram: "Y",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Yale_University_Shield_1.svg/120px-Yale_University_Shield_1.svg.png",
+  },
 ];
 
 const decisions = [
@@ -29,8 +77,18 @@ let pendingSchool = null;
 let revealed = false;
 let currentRotation = 0;
 
-function logoUrl(domain, size = 128) {
-  return `https://logo.clearbit.com/${domain}?size=${size}`;
+function applyImageFallback(img, fallbackText) {
+  img.addEventListener(
+    "error",
+    () => {
+      img.classList.add("logo-hidden");
+      const fallback = document.createElement("span");
+      fallback.className = "logo-fallback";
+      fallback.textContent = fallbackText;
+      img.parentElement?.appendChild(fallback);
+    },
+    { once: true },
+  );
 }
 
 function buildWheel() {
@@ -55,9 +113,10 @@ function buildWheel() {
     chip.style.transform = `rotate(${-angle}deg)`;
 
     const logo = document.createElement("img");
-    logo.src = logoUrl(school.domain, 64);
+    logo.src = school.logo;
     logo.alt = `${school.full} logo`;
     logo.loading = "lazy";
+    applyImageFallback(logo, school.monogram);
 
     const text = document.createElement("span");
     text.textContent = school.short;
@@ -75,10 +134,16 @@ function buildLogoStrip() {
     item.className = "ivy-logo-item";
 
     const logo = document.createElement("img");
-    logo.src = logoUrl(school.domain, 96);
+    logo.src = school.logo;
     logo.alt = `${school.full} logo`;
     logo.loading = "lazy";
+    applyImageFallback(logo, school.monogram);
+
+    const label = document.createElement("p");
+    label.className = "ivy-logo-name";
+    label.textContent = school.short;
     item.appendChild(logo);
+    item.appendChild(label);
     ivyLogoStrip.appendChild(item);
   });
 }
@@ -134,8 +199,11 @@ wheel.addEventListener("transitionend", () => {
   if (!spinning) return;
   spinning = false;
   schoolResult.textContent = pendingSchool.full;
-  schoolLogo.src = logoUrl(pendingSchool.domain, 128);
+  schoolLogo.src = pendingSchool.logo;
   schoolLogo.alt = `${pendingSchool.full} logo`;
+  schoolLogo.onerror = () => {
+    schoolLogo.classList.add("school-logo-hidden");
+  };
   schoolLogo.classList.remove("school-logo-hidden");
   revealBtn.disabled = false;
 });
