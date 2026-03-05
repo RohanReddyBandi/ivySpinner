@@ -114,15 +114,15 @@ h1 {
 
 .pointer {
   position: absolute;
-  top: -4px;
+  top: 8px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 0;
   border-left: 20px solid transparent;
   border-right: 20px solid transparent;
-  border-top: 0;
-  border-bottom: 38px solid var(--crimson);
+  border-top: 38px solid var(--crimson);
+  border-bottom: 0;
   z-index: 4;
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35));
 }
