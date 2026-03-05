@@ -2,56 +2,57 @@ const schools = [
   {
     short: "Brown",
     full: "Brown University",
-    color: "#f57f20",
+    color: "rgb(78, 42, 28)",
     monogram: "B",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Brown_Coat_of_Arms.svg",
   },
   {
     short: "Columbia",
     full: "Columbia University",
-    color: "#9fb0c9",
+    color: "rgb(155, 196, 226)",
     monogram: "C",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Columbia_University_Shield.svg",
   },
   {
     short: "Cornell",
     full: "Cornell University",
-    color: "#b31b1b",
+    color: "rgb(179, 27, 27)",
     monogram: "CU",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Cornell_University_seal.svg",
   },
   {
     short: "Dartmouth",
     full: "Dartmouth College",
-    color: "#00693e",
+    color: "rgb(0, 112, 60)",
     monogram: "D",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Dartmouth_College_Big_Green_logo.svg",
   },
   {
     short: "Harvard",
     full: "Harvard University",
-    color: "#a51c30",
+    color: "rgb(165, 28, 48)",
     monogram: "H",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Harvard_University_shield.svg",
   },
   {
     short: "Penn",
     full: "University of Pennsylvania",
-    color: "#011f5b",
+    color: "rgb(1, 31, 91)",
+    secondaryColor: "rgb(153, 0, 0)",
     monogram: "P",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/UPenn_shield_with_banner.svg",
   },
   {
     short: "Princeton",
     full: "Princeton University",
-    color: "#ee7f2d",
+    color: "rgb(255, 143, 0)",
     monogram: "PU",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Princeton_University_Shield.svg",
   },
   {
     short: "Yale",
     full: "Yale University",
-    color: "#00356b",
+    color: "rgb(0, 53, 107)",
     monogram: "Y",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Yale_University_Shield_1.svg",
   },
@@ -137,6 +138,10 @@ function buildWheel() {
     .map((school, idx) => {
       const start = idx * segmentSize;
       const end = (idx + 1) * segmentSize;
+      if (school.secondaryColor) {
+        const mid = start + segmentSize / 2;
+        return `${school.color} ${start}deg ${mid}deg, ${school.secondaryColor} ${mid}deg ${end}deg`;
+      }
       return `${school.color} ${start}deg ${end}deg`;
     })
     .join(", ");
