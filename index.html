@@ -48,9 +48,14 @@
 
     <div id="removeModal" class="modal-overlay modal-hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <div class="modal-card">
-        <h3 id="modalTitle">School Selected</h3>
+        <h3 id="modalTitle">Congratulations!</h3>
+        <div class="modal-school">
+          <img id="modalSchoolLogo" class="modal-school-logo" alt="" />
+          <p id="modalSchoolName" class="modal-school-name"></p>
+        </div>
         <p id="modalMessage">Do you want to remove this school from the wheel?</p>
         <div class="modal-actions">
+          <button id="openPortalBtn" class="btn btn-primary" type="button">Open Portal</button>
           <button id="removeSchoolBtn" class="btn btn-secondary" type="button">Remove from Wheel</button>
           <button id="keepSchoolBtn" class="btn btn-ghost" type="button">Keep It</button>
         </div>

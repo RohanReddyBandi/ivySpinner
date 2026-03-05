@@ -82,6 +82,9 @@ const selectedCount = document.getElementById("selectedCount");
 const selectionHint = document.getElementById("selectionHint");
 const removeModal = document.getElementById("removeModal");
 const modalMessage = document.getElementById("modalMessage");
+const modalSchoolLogo = document.getElementById("modalSchoolLogo");
+const modalSchoolName = document.getElementById("modalSchoolName");
+const openPortalBtn = document.getElementById("openPortalBtn");
 const removeSchoolBtn = document.getElementById("removeSchoolBtn");
 const keepSchoolBtn = document.getElementById("keepSchoolBtn");
 
@@ -135,6 +138,13 @@ function resetWheelPosition() {
 }
 
 function openRemovalModal(school) {
+  modalSchoolLogo.src = school.logo;
+  modalSchoolLogo.alt = `${school.full} logo`;
+  modalSchoolLogo.onerror = () => {
+    modalSchoolLogo.classList.add("logo-hidden");
+  };
+  modalSchoolLogo.classList.remove("logo-hidden");
+  modalSchoolName.textContent = school.full;
   modalMessage.textContent = `Do you want to remove ${school.full} from the wheel?`;
   removeModal.classList.remove("modal-hidden");
   modalOpen = true;
@@ -357,6 +367,11 @@ wheel.addEventListener("click", spinWheel);
 
 revealBtn.addEventListener("click", () => {
   if (spinning || modalOpen || !pendingSchool) return;
+  window.open(pendingSchool.portalUrl, "_blank", "noopener,noreferrer");
+});
+
+openPortalBtn.addEventListener("click", () => {
+  if (!pendingSchool) return;
   window.open(pendingSchool.portalUrl, "_blank", "noopener,noreferrer");
 });
 
