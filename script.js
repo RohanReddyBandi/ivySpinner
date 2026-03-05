@@ -71,6 +71,10 @@ const ivyLogoStrip = document.getElementById("ivyLogoStrip");
 const schoolResult = document.getElementById("schoolResult");
 const schoolLogo = document.getElementById("schoolLogo");
 const decisionResult = document.getElementById("decisionResult");
+const selectedCount = document.getElementById("selectedCount");
+const selectionHint = document.getElementById("selectionHint");
+
+const selectedSchools = new Set(schools.map((school) => school.short));
 
 let spinning = false;
 let pendingSchool = null;
@@ -91,9 +95,29 @@ function applyImageFallback(img, fallbackText) {
   );
 }
 
+function getActiveSchools() {
+  return schools.filter((school) => selectedSchools.has(school.short));
+}
+
+function getWheelLabelRadius(activeCount) {
+  if (activeCount <= 3) return 126;
+  if (activeCount <= 5) return 108;
+  return 94;
+}
+
+function resetWheelPosition() {
+  currentRotation = 0;
+  wheel.style.transition = "none";
+  wheel.style.transform = "rotate(0deg)";
+  void wheel.offsetWidth;
+  wheel.style.transition = "transform 4.8s cubic-bezier(0.15, 0.7, 0.05, 1)";
+}
+
 function buildWheel() {
-  const segmentSize = 360 / schools.length;
-  const gradientStops = schools
+  const activeSchools = getActiveSchools();
+  const segmentSize = 360 / activeSchools.length;
+  const labelRadiusPx = getWheelLabelRadius(activeSchools.length);
+  const gradientStops = activeSchools
     .map((school, idx) => {
       const start = idx * segmentSize;
       const end = (idx + 1) * segmentSize;
@@ -101,13 +125,15 @@ function buildWheel() {
     })
     .join(", ");
 
+  wheel.querySelectorAll(".segment-label").forEach((node) => node.remove());
   wheel.style.background = `conic-gradient(${gradientStops})`;
 
-  schools.forEach((school, idx) => {
+  activeSchools.forEach((school, idx) => {
     const label = document.createElement("div");
     label.className = "segment-label";
     const angle = idx * segmentSize + segmentSize / 2 - 90;
-    label.style.transform = `rotate(${angle}deg) translate(94px, -50%)`;
+    label.style.transform = `rotate(${angle}deg) translate(${labelRadiusPx}px, -50%)`;
+
     const chip = document.createElement("div");
     chip.className = "segment-chip";
     chip.style.transform = `rotate(${-angle}deg)`;
@@ -128,10 +154,36 @@ function buildWheel() {
   });
 }
 
+function updateSelectionUI() {
+  const count = selectedSchools.size;
+  selectedCount.textContent = `${count} selected`;
+  ivyLogoStrip.querySelectorAll(".ivy-logo-item").forEach((item) => {
+    const schoolKey = item.dataset.school;
+    const active = selectedSchools.has(schoolKey);
+    item.classList.toggle("ivy-logo-item-active", active);
+    item.classList.toggle("ivy-logo-item-inactive", !active);
+    item.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+}
+
+function clearStateForSelectionChange() {
+  spinning = false;
+  pendingSchool = null;
+  revealed = false;
+  revealBtn.disabled = true;
+  resetDecisionUI();
+  resetSchoolUI();
+  resetWheelPosition();
+}
+
 function buildLogoStrip() {
   schools.forEach((school) => {
-    const item = document.createElement("div");
-    item.className = "ivy-logo-item";
+    const item = document.createElement("button");
+    item.className = "ivy-logo-item ivy-logo-item-active";
+    item.type = "button";
+    item.dataset.school = school.short;
+    item.setAttribute("aria-pressed", "true");
+    item.setAttribute("aria-label", `Toggle ${school.full}`);
 
     const logo = document.createElement("img");
     logo.src = school.logo;
@@ -142,9 +194,29 @@ function buildLogoStrip() {
     const label = document.createElement("p");
     label.className = "ivy-logo-name";
     label.textContent = school.short;
+
     item.appendChild(logo);
     item.appendChild(label);
     ivyLogoStrip.appendChild(item);
+
+    item.addEventListener("click", () => {
+      if (spinning) return;
+
+      if (selectedSchools.has(school.short)) {
+        if (selectedSchools.size === 1) {
+          selectionHint.textContent = "Keep at least one school selected.";
+          return;
+        }
+        selectedSchools.delete(school.short);
+      } else {
+        selectedSchools.add(school.short);
+      }
+
+      selectionHint.textContent = "";
+      updateSelectionUI();
+      clearStateForSelectionChange();
+      buildWheel();
+    });
   });
 }
 
@@ -175,14 +247,17 @@ function resetSchoolUI() {
 function spinWheel() {
   if (spinning) return;
 
+  const activeSchools = getActiveSchools();
+  if (!activeSchools.length) return;
+
   spinning = true;
   revealed = false;
   revealBtn.disabled = true;
   resetDecisionUI();
 
-  const segmentSize = 360 / schools.length;
-  const landingIndex = Math.floor(Math.random() * schools.length);
-  pendingSchool = schools[landingIndex];
+  const segmentSize = 360 / activeSchools.length;
+  const landingIndex = Math.floor(Math.random() * activeSchools.length);
+  pendingSchool = activeSchools[landingIndex];
 
   const centerOfSegment = landingIndex * segmentSize + segmentSize / 2;
   const pointerAngle = 0;
@@ -196,7 +271,7 @@ function spinWheel() {
 }
 
 wheel.addEventListener("transitionend", () => {
-  if (!spinning) return;
+  if (!spinning || !pendingSchool) return;
   spinning = false;
   schoolResult.textContent = pendingSchool.full;
   schoolLogo.src = pendingSchool.logo;
@@ -222,16 +297,12 @@ resetBtn.addEventListener("click", () => {
   spinning = false;
   pendingSchool = null;
   revealed = false;
-  currentRotation = 0;
-  wheel.style.transition = "none";
-  wheel.style.transform = "rotate(0deg)";
-  // Force reflow so transition can be restored for future spins.
-  void wheel.offsetWidth;
-  wheel.style.transition = "transform 4.8s cubic-bezier(0.15, 0.7, 0.05, 1)";
+  resetWheelPosition();
   resetSchoolUI();
   resetDecisionUI();
   revealBtn.disabled = true;
 });
 
 buildLogoStrip();
+updateSelectionUI();
 buildWheel();
