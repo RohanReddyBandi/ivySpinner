@@ -375,8 +375,10 @@ removeSchoolBtn.addEventListener("click", () => {
   selectedSchools.delete(pendingSchool.short);
   selectionHint.textContent = `${pendingSchool.short} removed from the wheel.`;
   updateSelectionUI();
-  clearStateForSelectionChange();
+  closeRemovalModal();
+  resetWheelPosition();
   buildWheel();
+  revealBtn.disabled = false;
 });
 
 keepSchoolBtn.addEventListener("click", () => {
