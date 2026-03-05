@@ -259,7 +259,7 @@ function weightedDecision() {
   return decisions[decisions.length - 1];
 }
 
-function runConfetti(durationMs = 1800) {
+function runConfetti(durationMs = 4000) {
   const dpr = window.devicePixelRatio || 1;
   const width = window.innerWidth;
   const height = window.innerHeight;
@@ -368,6 +368,7 @@ wheel.addEventListener("transitionend", () => {
 });
 
 spinBtn.addEventListener("click", spinWheel);
+wheel.addEventListener("click", spinWheel);
 
 revealBtn.addEventListener("click", () => {
   if (spinning || modalOpen || !pendingSchool || revealed) return;
