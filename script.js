@@ -38,7 +38,6 @@ const schools = [
     short: "Penn",
     full: "University of Pennsylvania",
     color: "rgb(1, 31, 91)",
-    secondaryColor: "rgb(153, 0, 0)",
     monogram: "P",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/UPenn_shield_with_banner.svg",
   },
@@ -86,6 +85,16 @@ let pendingSchool = null;
 let revealed = false;
 let currentRotation = 0;
 let modalOpen = false;
+
+const confettiCanvas = document.createElement("canvas");
+const confettiCtx = confettiCanvas.getContext("2d");
+confettiCanvas.style.position = "fixed";
+confettiCanvas.style.inset = "0";
+confettiCanvas.style.width = "100vw";
+confettiCanvas.style.height = "100vh";
+confettiCanvas.style.pointerEvents = "none";
+confettiCanvas.style.zIndex = "30";
+document.body.appendChild(confettiCanvas);
 
 function applyImageFallback(img, fallbackText) {
   img.addEventListener(
@@ -138,10 +147,6 @@ function buildWheel() {
     .map((school, idx) => {
       const start = idx * segmentSize;
       const end = (idx + 1) * segmentSize;
-      if (school.secondaryColor) {
-        const mid = start + segmentSize / 2;
-        return `${school.color} ${start}deg ${mid}deg, ${school.secondaryColor} ${mid}deg ${end}deg`;
-      }
       return `${school.color} ${start}deg ${end}deg`;
     })
     .join(", ");
@@ -254,6 +259,61 @@ function weightedDecision() {
   return decisions[decisions.length - 1];
 }
 
+function runConfetti(durationMs = 1800) {
+  const dpr = window.devicePixelRatio || 1;
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  confettiCanvas.width = Math.floor(width * dpr);
+  confettiCanvas.height = Math.floor(height * dpr);
+  confettiCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const colors = [
+    "rgb(78, 42, 28)",
+    "rgb(155, 196, 226)",
+    "rgb(179, 27, 27)",
+    "rgb(0, 112, 60)",
+    "rgb(165, 28, 48)",
+    "rgb(1, 31, 91)",
+    "rgb(255, 143, 0)",
+    "rgb(0, 53, 107)",
+  ];
+  const pieces = Array.from({ length: 140 }, () => ({
+    x: Math.random() * width,
+    y: -20 - Math.random() * height * 0.5,
+    size: 5 + Math.random() * 7,
+    vx: -2 + Math.random() * 4,
+    vy: 2 + Math.random() * 4,
+    gravity: 0.05 + Math.random() * 0.08,
+    rotation: Math.random() * Math.PI * 2,
+    vr: -0.15 + Math.random() * 0.3,
+    color: colors[Math.floor(Math.random() * colors.length)],
+  }));
+
+  const start = performance.now();
+  function frame(now) {
+    confettiCtx.clearRect(0, 0, width, height);
+    pieces.forEach((p) => {
+      p.vy += p.gravity;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rotation += p.vr;
+      confettiCtx.save();
+      confettiCtx.translate(p.x, p.y);
+      confettiCtx.rotate(p.rotation);
+      confettiCtx.fillStyle = p.color;
+      confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+      confettiCtx.restore();
+    });
+
+    if (now - start < durationMs) {
+      requestAnimationFrame(frame);
+    } else {
+      confettiCtx.clearRect(0, 0, width, height);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
 function resetDecisionUI() {
   decisionResult.textContent = "Hidden";
   decisionResult.className = "";
@@ -302,6 +362,7 @@ wheel.addEventListener("transitionend", () => {
     schoolLogo.classList.add("school-logo-hidden");
   };
   schoolLogo.classList.remove("school-logo-hidden");
+  runConfetti();
   revealBtn.disabled = false;
   openRemovalModal(pendingSchool);
 });
