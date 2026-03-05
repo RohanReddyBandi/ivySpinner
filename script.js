@@ -73,6 +73,10 @@ const schoolLogo = document.getElementById("schoolLogo");
 const decisionResult = document.getElementById("decisionResult");
 const selectedCount = document.getElementById("selectedCount");
 const selectionHint = document.getElementById("selectionHint");
+const removeModal = document.getElementById("removeModal");
+const modalMessage = document.getElementById("modalMessage");
+const removeSchoolBtn = document.getElementById("removeSchoolBtn");
+const keepSchoolBtn = document.getElementById("keepSchoolBtn");
 
 const selectedSchools = new Set(schools.map((school) => school.short));
 
@@ -80,6 +84,7 @@ let spinning = false;
 let pendingSchool = null;
 let revealed = false;
 let currentRotation = 0;
+let modalOpen = false;
 
 function applyImageFallback(img, fallbackText) {
   img.addEventListener(
@@ -111,6 +116,17 @@ function resetWheelPosition() {
   wheel.style.transform = "rotate(0deg)";
   void wheel.offsetWidth;
   wheel.style.transition = "transform 4.8s cubic-bezier(0.15, 0.7, 0.05, 1)";
+}
+
+function openRemovalModal(school) {
+  modalMessage.textContent = `Do you want to remove ${school.full} from the wheel?`;
+  removeModal.classList.remove("modal-hidden");
+  modalOpen = true;
+}
+
+function closeRemovalModal() {
+  removeModal.classList.add("modal-hidden");
+  modalOpen = false;
 }
 
 function buildWheel() {
@@ -170,6 +186,7 @@ function clearStateForSelectionChange() {
   spinning = false;
   pendingSchool = null;
   revealed = false;
+  closeRemovalModal();
   revealBtn.disabled = true;
   resetDecisionUI();
   resetSchoolUI();
@@ -200,7 +217,7 @@ function buildLogoStrip() {
     ivyLogoStrip.appendChild(item);
 
     item.addEventListener("click", () => {
-      if (spinning) return;
+      if (spinning || modalOpen) return;
 
       if (selectedSchools.has(school.short)) {
         if (selectedSchools.size === 1) {
@@ -245,7 +262,7 @@ function resetSchoolUI() {
 }
 
 function spinWheel() {
-  if (spinning) return;
+  if (spinning || modalOpen) return;
 
   const activeSchools = getActiveSchools();
   if (!activeSchools.length) return;
@@ -281,22 +298,47 @@ wheel.addEventListener("transitionend", () => {
   };
   schoolLogo.classList.remove("school-logo-hidden");
   revealBtn.disabled = false;
+  openRemovalModal(pendingSchool);
 });
 
 spinBtn.addEventListener("click", spinWheel);
 
 revealBtn.addEventListener("click", () => {
-  if (spinning || !pendingSchool || revealed) return;
+  if (spinning || modalOpen || !pendingSchool || revealed) return;
   const pick = weightedDecision();
   decisionResult.textContent = pick.label;
   decisionResult.className = pick.className;
   revealed = true;
 });
 
+removeSchoolBtn.addEventListener("click", () => {
+  if (!pendingSchool) {
+    closeRemovalModal();
+    return;
+  }
+
+  if (selectedSchools.size === 1) {
+    selectionHint.textContent = "You need at least one school on the wheel.";
+    closeRemovalModal();
+    return;
+  }
+
+  selectedSchools.delete(pendingSchool.short);
+  selectionHint.textContent = `${pendingSchool.short} removed from the wheel.`;
+  updateSelectionUI();
+  clearStateForSelectionChange();
+  buildWheel();
+});
+
+keepSchoolBtn.addEventListener("click", () => {
+  closeRemovalModal();
+});
+
 resetBtn.addEventListener("click", () => {
   spinning = false;
   pendingSchool = null;
   revealed = false;
+  closeRemovalModal();
   resetWheelPosition();
   resetSchoolUI();
   resetDecisionUI();

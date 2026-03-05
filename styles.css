@@ -351,6 +351,44 @@ h3 {
   color: var(--waitlist);
 }
 
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 19, 33, 0.42);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  z-index: 20;
+}
+
+.modal-hidden {
+  display: none;
+}
+
+.modal-card {
+  width: min(460px, 100%);
+  border-radius: 14px;
+  border: 1px solid rgba(16, 42, 67, 0.2);
+  background: #fdfaf2;
+  box-shadow: 0 18px 40px rgba(14, 26, 45, 0.22);
+  padding: 20px;
+}
+
+.modal-card h3 {
+  margin: 0 0 8px;
+}
+
+.modal-card p {
+  margin: 0;
+}
+
+.modal-actions {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
 @media (max-width: 900px) {
   .ivy-logo-strip {
     grid-template-columns: repeat(4, minmax(0, 1fr));
