@@ -5,6 +5,8 @@ const schools = [
     color: "rgb(78, 42, 28)",
     monogram: "B",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Brown_Coat_of_Arms.svg",
+    portalUrl:
+      "https://apply.college.brown.edu/account/login?r=https://apply.college.brown.edu/apply/status&cookie=1",
   },
   {
     short: "Columbia",
@@ -12,6 +14,8 @@ const schools = [
     color: "rgb(155, 196, 226)",
     monogram: "C",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Columbia_University_Shield.svg",
+    portalUrl:
+      "https://apply.college.columbia.edu/account/login?r=https://apply.college.columbia.edu/apply/status&cookie=1",
   },
   {
     short: "Cornell",
@@ -19,6 +23,8 @@ const schools = [
     color: "rgb(179, 27, 27)",
     monogram: "CU",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Cornell_University_seal.svg",
+    portalUrl:
+      "https://engage.admissions.cornell.edu/account/login?r=https://engage.admissions.cornell.edu/portal/status?_gl%3D1*12kdl6g*_ga*NjMyODE4NjAuMTc3MjcyMzE0Ng..*_ga_0DRE5CCNMT*czE3NzI3MjMxNDYkbzEkZzEkdDE3NzI3MjMxNDYkajYwJGwwJGgw*_ga_LPDFD3NWL4*czE3NzI3MjMxNDYkbzEkZzEkdDE3NzI3MjMxNDYkajYwJGwwJGgw&cookie=1",
   },
   {
     short: "Dartmouth",
@@ -26,6 +32,8 @@ const schools = [
     color: "rgb(0, 112, 60)",
     monogram: "D",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Dartmouth_College_Big_Green_logo.svg",
+    portalUrl:
+      "https://apply.dartmouth.edu/account/login?r=https://apply.dartmouth.edu/apply/status&cookie=1",
   },
   {
     short: "Harvard",
@@ -33,6 +41,7 @@ const schools = [
     color: "rgb(165, 28, 48)",
     monogram: "H",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Harvard_University_shield.svg",
+    portalUrl: "https://apply.college.harvard.edu/account/login?r=https://apply.college.harvard.edu/apply/&cookie=1",
   },
   {
     short: "Penn",
@@ -40,6 +49,8 @@ const schools = [
     color: "rgb(1, 31, 91)",
     monogram: "P",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/UPenn_shield_with_banner.svg",
+    portalUrl:
+      "https://key.admissions.upenn.edu/account/login?r=https://key.admissions.upenn.edu/apply/status&cookie=1",
   },
   {
     short: "Princeton",
@@ -47,6 +58,7 @@ const schools = [
     color: "rgb(255, 143, 0)",
     monogram: "PU",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Princeton_University_Shield.svg",
+    portalUrl: "https://admission.princeton.edu/user/login",
   },
   {
     short: "Yale",
@@ -54,13 +66,9 @@ const schools = [
     color: "rgb(0, 53, 107)",
     monogram: "Y",
     logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Yale_University_Shield_1.svg",
+    portalUrl:
+      "https://apps.admissions.yale.edu/account/login?r=https://apps.admissions.yale.edu/apply/status&cookie=1",
   },
-];
-
-const decisions = [
-  { label: "Accepted", className: "decision-accepted", weight: 0.24 },
-  { label: "Waitlisted", className: "decision-waitlisted", weight: 0.26 },
-  { label: "Rejected", className: "decision-rejected", weight: 0.5 },
 ];
 
 const wheel = document.getElementById("wheel");
@@ -70,7 +78,6 @@ const resetBtn = document.getElementById("resetBtn");
 const ivyLogoStrip = document.getElementById("ivyLogoStrip");
 const schoolResult = document.getElementById("schoolResult");
 const schoolLogo = document.getElementById("schoolLogo");
-const decisionResult = document.getElementById("decisionResult");
 const selectedCount = document.getElementById("selectedCount");
 const selectionHint = document.getElementById("selectionHint");
 const removeModal = document.getElementById("removeModal");
@@ -82,7 +89,6 @@ const selectedSchools = new Set(schools.map((school) => school.short));
 
 let spinning = false;
 let pendingSchool = null;
-let revealed = false;
 let currentRotation = 0;
 let modalOpen = false;
 
@@ -195,10 +201,8 @@ function updateSelectionUI() {
 function clearStateForSelectionChange() {
   spinning = false;
   pendingSchool = null;
-  revealed = false;
   closeRemovalModal();
   revealBtn.disabled = true;
-  resetDecisionUI();
   resetSchoolUI();
   resetWheelPosition();
 }
@@ -245,18 +249,6 @@ function buildLogoStrip() {
       buildWheel();
     });
   });
-}
-
-function weightedDecision() {
-  const roll = Math.random();
-  let cumulative = 0;
-
-  for (const option of decisions) {
-    cumulative += option.weight;
-    if (roll <= cumulative) return option;
-  }
-
-  return decisions[decisions.length - 1];
 }
 
 function runConfetti(durationMs = 4000) {
@@ -314,11 +306,6 @@ function runConfetti(durationMs = 4000) {
   requestAnimationFrame(frame);
 }
 
-function resetDecisionUI() {
-  decisionResult.textContent = "Hidden";
-  decisionResult.className = "";
-}
-
 function resetSchoolUI() {
   schoolResult.textContent = "Waiting for spin...";
   schoolLogo.classList.add("school-logo-hidden");
@@ -333,9 +320,7 @@ function spinWheel() {
   if (!activeSchools.length) return;
 
   spinning = true;
-  revealed = false;
   revealBtn.disabled = true;
-  resetDecisionUI();
 
   const segmentSize = 360 / activeSchools.length;
   const landingIndex = Math.floor(Math.random() * activeSchools.length);
@@ -371,11 +356,8 @@ spinBtn.addEventListener("click", spinWheel);
 wheel.addEventListener("click", spinWheel);
 
 revealBtn.addEventListener("click", () => {
-  if (spinning || modalOpen || !pendingSchool || revealed) return;
-  const pick = weightedDecision();
-  decisionResult.textContent = pick.label;
-  decisionResult.className = pick.className;
-  revealed = true;
+  if (spinning || modalOpen || !pendingSchool) return;
+  window.open(pendingSchool.portalUrl, "_blank", "noopener,noreferrer");
 });
 
 removeSchoolBtn.addEventListener("click", () => {
@@ -404,11 +386,9 @@ keepSchoolBtn.addEventListener("click", () => {
 resetBtn.addEventListener("click", () => {
   spinning = false;
   pendingSchool = null;
-  revealed = false;
   closeRemovalModal();
   resetWheelPosition();
   resetSchoolUI();
-  resetDecisionUI();
   revealBtn.disabled = true;
 });
 
