@@ -121,6 +121,11 @@ function getActiveSchools() {
 }
 
 function getWheelLabelRadius(activeCount) {
+  if (window.innerWidth <= 640) {
+    if (activeCount <= 3) return 96;
+    if (activeCount <= 5) return 82;
+    return 68;
+  }
   if (activeCount <= 3) return 126;
   if (activeCount <= 5) return 108;
   return 94;
@@ -392,6 +397,12 @@ resetBtn.addEventListener("click", () => {
   resetWheelPosition();
   resetSchoolUI();
   revealBtn.disabled = true;
+});
+
+window.addEventListener("resize", () => {
+  if (spinning) return;
+  resetWheelPosition();
+  buildWheel();
 });
 
 buildLogoStrip();

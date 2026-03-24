@@ -387,3 +387,84 @@ h3 {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 640px) {
+  body {
+    padding: 12px;
+  }
+
+  .app-shell {
+    border-radius: 18px;
+    padding: 16px;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 12vw, 3.2rem);
+  }
+
+  .subhead {
+    margin-bottom: 14px;
+    font-size: 0.95rem;
+  }
+
+  .picker-note {
+    margin: 0 0 8px;
+    font-size: 0.9rem;
+  }
+
+  .ivy-logo-strip {
+    gap: 10px;
+  }
+
+  .ivy-logo-item {
+    min-height: 64px;
+    padding: 6px;
+  }
+
+  .ivy-logo-item img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .ivy-logo-name {
+    font-size: 0.72rem;
+  }
+
+  .wheel-wrap {
+    width: min(100%, 360px);
+  }
+
+  .pointer {
+    top: 10px;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-top-width: 30px;
+  }
+
+  .wheel {
+    border-width: 10px;
+  }
+
+  .segment-label {
+    width: 82px;
+  }
+
+  .segment-chip {
+    gap: 4px;
+    padding: 4px 2px;
+  }
+
+  .segment-chip img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .segment-chip span {
+    max-width: 72px;
+    font-size: 0.62rem;
+  }
+
+  .btn {
+    padding: 13px 14px;
+  }
+}
